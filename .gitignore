@@ -15,3 +15,5 @@ pom.xml.asc
 .hgignore
 .hg/
 .env
+.nrepl-port
+.calva/
