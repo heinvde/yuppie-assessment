@@ -26,6 +26,12 @@
       (is (contains? headers "Location"))
       (is (= 302 status)))))
 
+(deftest test-app-route-get-auth-verified
+  (testing "GET /auth/verified has successfull response"
+    (let [{:keys [body status]} (app (mock/request :get "/auth/verified"))]
+      (is (= body "Authenticated successfully"))
+      (is (= 200 status)))))
+
 (deftest test-app-route-get-index
   (testing "GET / has successfull response"
     (let [{:keys [status]} (app (mock/request :get "/"))]
