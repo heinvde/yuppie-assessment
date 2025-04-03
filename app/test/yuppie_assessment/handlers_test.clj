@@ -4,7 +4,13 @@
 
 (deftest test-handle-check
   (testing "returns valid health check response"
-    (is (= (handlers/handle-health-check)
-           {:status 200
+    (is (= {:status 200
             :headers {"Content-Type" "application/json"}
-            :body "{\"message\":\"OK\"}"}))))
+            :body "{\"message\":\"OK\"}"}
+           (handlers/handle-health-check)))))
+
+(deftest handle-oauth2-redirect
+  (testing "returns redirect response with oauth2 url"
+    (let [result (handlers/handle-oauth2-redirect)]
+      (is (= 302 (:status result)))
+      (is (string? (-> result :headers (get "Location")))))));
