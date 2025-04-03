@@ -4,6 +4,15 @@
             [ring.mock.request :as mock]
             [clojure.data.json :as json]))
 
+(deftest test-validate-env
+  (testing "Validating environment variable does not exist"
+    (is (= false (validate-env [:i-am-required] {}))))
+  (testing "Validating environment variable is nil"
+    (is (= false (validate-env [:i-am-required] {:i-am-required nil}))))
+  (testing "Validating environment variable is valid"
+    (is (= true (validate-env [:i-am-required] {:i-am-required "Yay!"})))))
+
+;; === Routes ===
 
 (deftest test-app-route-get-check
   (testing "GET /check returns valid response"

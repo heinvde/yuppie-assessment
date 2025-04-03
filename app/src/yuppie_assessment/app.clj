@@ -1,9 +1,28 @@
 (ns yuppie-assessment.app
-  (:require [compojure.core :refer :all]
+  (:require [clojure.string :as clj-string]
+            [compojure.core :refer :all]
             [compojure.route :as route]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.util.response :as response]
-            [yuppie-assessment.handlers :as handlers]))
+            [yuppie-assessment.handlers :as handlers]
+            [environ.core :refer [env]]))
+
+(def required-env [:google-client-id
+                   :google-client-secret
+                   :google-oauth2-redirect-uri])
+(def validate-env (complement
+                   (fn [required-vars current-vars]
+                     (some #(nil? (get current-vars %)) required-vars))))
+
+(defn init-app
+  "Called on initialization of App and used for logging and environment validation."
+  []
+  (println "Validating server startup...")
+  (when (not (validate-env required-env env))
+    (throw (ex-info
+            (str "Missing one or more required environment variables: " (clj-string/join ", " required-env))
+            {:required required-env})))
+  (println "Validation successfull"))
 
 (defroutes app-routes
   (GET "/" [] (response/redirect "/auth/verify"))

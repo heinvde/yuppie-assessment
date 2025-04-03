@@ -10,6 +10,7 @@
             [lein-environ "1.2.0"]]
   :repl-options {:init-ns yuppie-assessment.app}
   :ring {:handler yuppie-assessment.app/app
+         :init yuppie-assessment.app/init-app
          :port 8080
          :auto-reload? true}
   :profiles
@@ -17,10 +18,7 @@
    :test [:project/test]
    :project/dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                                 [ring/ring-mock "0.3.2"]]
-                 :env {:google-client-id nil
-                       :google-client-secret nil
-                       :google-oauth2-state-key nil
-                       :google-oauth2-redirect-uri "http://localhost:8080/auth/verified"}}
+                 :env {:google-oauth2-redirect-uri "http://localhost:8080/auth/verified"}}
    :project/test {:dependencies [[javax.servlet/servlet-api "2.5"]
                                  [ring/ring-mock "0.3.2"]]
                   :env {:google-client-id "fake-google-client-id"
