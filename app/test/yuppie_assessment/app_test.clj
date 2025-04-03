@@ -17,6 +17,12 @@
       (is (contains? headers "Location"))
       (is (= 302 status)))))
 
+(deftest test-app-route-get-index
+  (testing "GET / has successfull response"
+    (let [{:keys [status]} (app (mock/request :get "/"))]
+      (is (and (>= status 200)
+               (< status 500))))))
+
 (deftest test-app-route-not-found
   (testing "GET /invalidx returns not found"
     (let [{:keys [body status]} (app (mock/request :get "/invalidx"))]
