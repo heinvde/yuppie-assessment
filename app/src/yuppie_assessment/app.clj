@@ -6,6 +6,7 @@
 
 (defroutes app-routes
   (GET "/" [] "Not Implemented")
+  (GET "/auth/verify" [] (handlers/handle-oauth2-redirect))
   (GET "/check" [] (handlers/handle-health-check))
   (route/not-found "Not Found"))
 
