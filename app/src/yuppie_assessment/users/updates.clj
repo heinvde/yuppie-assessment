@@ -8,11 +8,12 @@
   "Create a new user with Google OAuth code"
   [oauth-code]
   (let [client-spec (config :google)
-        insert-entity (partial mysql-repo/insert-user-profile user-db)
         redirect-uri (-> client-spec :oauth2 :redirect-uri)
         access-token (google/oauth2-code->access-token client-spec oauth-code redirect-uri)
-        profile-id (-> random-uuid str)]
-    (-> {:access-token access-token}
-        (google/get-user-profile)
-        (assoc :id profile-id)
-        (insert-entity))))
+        profile-id (-> random-uuid str)
+        profile (-> {:access-token access-token}
+                    (google/get-user-profile)
+                    (assoc :id profile-id))]
+    (mysql-repo/insert-user-profile user-db profile)
+    profile))
+        
