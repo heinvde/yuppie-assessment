@@ -22,7 +22,7 @@
 (def check-profile
   (fn [expected profile]
     (and
-     (string? (:id profile))
+     (uuid? (:id profile))
      (= (:first-name expected) (:first-name profile))
      (= (:last-name expected) (:last-name profile))
      (= (:email-address expected) (:email-address profile)))))

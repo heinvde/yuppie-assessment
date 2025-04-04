@@ -23,15 +23,16 @@
 
 (deftest ^:integration test-insert-user-profile
   (testing "can insert new profile into MySQL db"
-    (let [profile {:id "my-id"
+    (let [id (random-uuid)
+          profile {:id id
                    :first-name "my-first-name"
                    :last-name "my-last-name"
                    :email-address "my-email"}]
       (mysql-repo/insert-user-profile user-db profile)
-      (is (= {:id "my-id"
+      (is (= {:id (str id)
               :first_name "my-first-name"
               :last_name "my-last-name"
               :email "my-email"}
              (jdbc/query (mysql-conn user-db)
-                         ["SELECT * FROM user_profiles WHERE id = ?" (:id profile)]
+                         ["SELECT * FROM user_profiles WHERE id = ?" (str id)]
                          {:result-set-fn first}))))))
