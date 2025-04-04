@@ -16,6 +16,7 @@
   :repl-options {:init-ns yuppie-assessment.app}
   :ring {:handler yuppie-assessment.app/app
          :init yuppie-assessment.app/init-app
+         :destroy yuppie-assessment.app/shutdown-app
          :port 8080
          :auto-reload? true}
   :test-selectors {:default (complement :integration)
