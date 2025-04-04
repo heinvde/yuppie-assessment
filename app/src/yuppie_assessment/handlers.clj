@@ -2,6 +2,7 @@
   (:require [clojure.data.json :as json]
             [ring.util.response :as response]
             [yuppie-assessment.google.client :as google]
+            [yuppie-assessment.users.updates :as user-updates]
             [environ.core :refer [env]]))
 
 (defn handle-health-check
@@ -22,3 +23,15 @@
                                               (google/scopes :user-profile)]
                                      :state (env :google-oauth2-state-key)})
       (response/redirect)))
+
+(defn handle-oauth2-callback
+  "Handles the OAuth2 callback from Google."
+  [request]
+  (let [profile (-> request
+                    :query-params
+                    (get "code")
+                    (user-updates/create-user-with-google-oauth))]
+    (-> (str "Welcome " (:first-name profile) " " (:last-name profile) ", your account has successfully been created.")
+        (response/response)
+        (response/status 200)
+        (response/content-type "text/plain"))))

@@ -18,7 +18,7 @@
 (defroutes app-routes
   (GET "/" [] (response/redirect "/auth/verify"))
   (GET "/auth/verify" [] (handlers/handle-oauth2-redirect))
-  (GET "/auth/verified" [] "Authenticated successfully")
+  (GET "/auth/verified" request (handlers/handle-oauth2-callback request))
   (GET "/check" [] (handlers/handle-health-check))
   (route/not-found "Not Found"))
 
