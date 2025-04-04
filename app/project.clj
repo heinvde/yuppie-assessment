@@ -18,6 +18,9 @@
          :init yuppie-assessment.app/init-app
          :port 8080
          :auto-reload? true}
+  :test-selectors {:default (complement :integration)
+                   :integration :integration
+                   :all (fn [_] true)}
   :profiles
   {:dev [:project/dev :profiles/dev]
    :test [:project/test]
