@@ -47,10 +47,11 @@
                                           {:access-token "my-access-token"})
         google/get-user-profile (test-mock
                                  "get-user-profile"
-                                 [(arg-contains? :access-token)]
+                                 [#(string? (:access-token %))]
                                  google-profile)
         mysql-repo/insert-user-profile (test-mock
                                         "insert-user-profile"
                                         [keyword? (partial check-profile google-profile)]
                                         nil)]
-        (user-updates/create-user-with-google-oauth "my-oauth-code")))))
+        (is (check-profile google-profile
+                           (user-updates/create-user-with-google-oauth "my-oauth-code")))))))

@@ -9,9 +9,8 @@
   [oauth-code]
   (let [client-spec (config :google)
         redirect-uri (-> client-spec :oauth2 :redirect-uri)
-        access-token (google/oauth2-code->access-token client-spec oauth-code redirect-uri)
         profile-id (-> random-uuid str)
-        profile (-> {:access-token access-token}
+        profile (-> (google/oauth2-code->access-token client-spec oauth-code redirect-uri)
                     (google/get-user-profile)
                     (assoc :id profile-id))]
     (mysql-repo/insert-user-profile user-db profile)
