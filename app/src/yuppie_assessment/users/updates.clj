@@ -13,6 +13,8 @@
         profile (-> (google/oauth2-code->access-token client-spec oauth-code redirect-uri)
                     (google/get-user-profile)
                     (assoc :id profile-id))]
-    (mysql-repo/insert-user-profile user-db profile)
-    profile))
-        
+    (if-let [found (mysql-repo/get-user-profile-by-email user-db (:email-address profile))]
+      (do (mysql-repo/update-user-profile-by-email user-db (:email-address profile) profile)
+          (assoc profile :id (:id found)))
+      (do (mysql-repo/insert-user-profile user-db profile)
+          profile))))

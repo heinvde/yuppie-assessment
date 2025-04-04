@@ -22,3 +22,17 @@
             {:id "my-id"
              :first-name "my-first-name"
              :email-address "my-email"})))))
+
+(deftest test-profile->mysql-update
+  (testing "can format db profile update model"
+    (is (= {:first_name "my-first-name"
+            :last_name "my-last-name"
+            :email "my-email"}
+           (model/profile->mysql-update 
+            {:first-name "my-first-name"
+             :last-name "my-last-name"
+             :email-address "my-email"}))))
+  (testing "can format minimum db profile update model"
+    (is (= {:first_name "my-first-name"}
+           (model/profile->mysql-update
+            {:first-name "my-first-name"})))))
