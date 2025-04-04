@@ -39,7 +39,29 @@
                (google/oauth2-code->access-token {:code "test-code"
                                                   :client-id "test-client-id"
                                                   :client-secret "test-client-secret"
-                                                  :redirect-uri "http://test.com/yes"})))))))
+                                                  :redirect-uri "http://test.com/yes"}))))))
+  (testing "can get access token for oauth code using multi arity version"
+    (let [expected-url "https://oauth2.googleapis.com/token"
+          expected-options {:form-params {:code "test-code"
+                                          :client_id "test-client-id"
+                                          :client_secret "test-client-secret"
+                                          :redirect_uri "http://test.com/yes"
+                                          :grant_type "authorization_code"}}
+          expected-result {:access-token "fake-access-token"
+                           :expires-in 3600
+                           :refresh-token "fake-refresh-token"}]
+      (with-redefs [http/post
+                    (fn [url options]
+                      (is (= expected-url url))
+                      (is (= expected-options options))
+                      {:body (json/write-str {"access_token" "fake-access-token"
+                                              "expires_in" 3600
+                                              "refresh_token" "fake-refresh-token"})})]
+        (is (= expected-result
+               (google/oauth2-code->access-token
+                {:client-id "test-client-id" :client-secret "test-client-secret"}
+                "test-code"
+                "http://test.com/yes")))))))
 
 (deftest test-get-user-profile
   (testing "can get user profile from google"
