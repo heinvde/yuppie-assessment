@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  yc-mysql-users:
+    image: mysql:5.7
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "MYSQL_DATABASE=users"
+    volumes:
+      - "./databases/users:/docker-entrypoint-initdb.d"
+    ports:
+      - "3306:3306"
