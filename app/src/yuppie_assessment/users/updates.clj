@@ -1,0 +1,18 @@
+(ns yuppie-assessment.users.updates
+  (:require [yuppie-assessment.google.client :as google]
+            [yuppie-assessment.config :refer [config]]
+            [yuppie-assessment.users.repository.mysql :as mysql-repo]
+            [yuppie-assessment.mysql.client :refer [user-db]]))
+
+(defn create-user-with-google-oauth
+  "Create a new user with Google OAuth code"
+  [oauth-code]
+  (let [client-spec (config :google)
+        insert-entity (partial mysql-repo/insert-user-profile user-db)
+        redirect-uri (-> client-spec :oauth2 :redirect-uri)
+        access-token (google/oauth2-code->access-token client-spec oauth-code redirect-uri)
+        profile-id (-> random-uuid str)]
+    (-> {:access-token access-token}
+        (google/get-user-profile)
+        (assoc :id profile-id)
+        (insert-entity))))
