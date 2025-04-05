@@ -16,7 +16,6 @@
   (fn [run-tests]
     (mount/start #'yuppie-assessment.config/config
                  #'yuppie-assessment.mysql.client/mysql-conn)
-    (clean-database)
     (run-tests)
     (clean-database)
     (mount/stop)))
@@ -24,8 +23,7 @@
 (use-fixtures :each
   (fn [run-tests]
     (clean-database)
-    (run-tests)
-    (clean-database)))
+    (run-tests)))
 
 (deftest ^:integration test-insert-user-profile
   (testing "can insert new profile into MySQL db"
@@ -38,7 +36,8 @@
       (is (= {:id (str id)
               :first_name "my-first-name"
               :last_name "my-last-name"
-              :email "my-email"}
+              :email "my-email"
+              :profile_picture_url nil}
              (jdbc/query (mysql-conn user-db)
                          ["SELECT * FROM user_profiles WHERE id = ?" (str id)]
                          {:result-set-fn first}))))))
@@ -59,7 +58,8 @@
       (is (= {:id (str id)
               :first_name "my-first-name-2"
               :last_name "my-last-name-2"
-              :email "my-email"}
+              :email "my-email"
+              :profile_picture_url nil}
              (jdbc/query (mysql-conn user-db)
                          ["SELECT * FROM user_profiles WHERE id = ?" (str id)]
                          {:result-set-fn first}))))))
