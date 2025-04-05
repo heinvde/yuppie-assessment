@@ -1,7 +1,9 @@
 (ns yuppie-assessment.users.repository.mysql
   (:require [clojure.java.jdbc :as jdbc]
             [yuppie-assessment.users.model.profile :as model]
-            [yuppie-assessment.mysql.client :refer [mysql-conn]]))
+            [yuppie-assessment.mysql.client :refer [mysql-conn]]
+            [yuppie-assessment.users.errors :as errors])
+  (:import (com.mysql.jdbc.exceptions.jdbc4 MySQLIntegrityConstraintViolationException)))
 
 (def profiles-table :user_profiles)
 
@@ -26,6 +28,13 @@
 (defn insert-user-profile
   "Insert user profile into MySQL db"
   [db profile]
-  (jdbc/insert! (get-db db)
-                profiles-table
-                (model/profile->mysql-profile profile)))
+  (try
+    (jdbc/insert! (get-db db)
+                  profiles-table
+                  (model/profile->mysql-profile profile))
+    (catch Exception e
+      (if (instance? MySQLIntegrityConstraintViolationException e)
+        (throw (ex-info errors/message-already-exists
+                        {:type errors/type-already-exists
+                         :profile profile}))
+        (throw e)))))

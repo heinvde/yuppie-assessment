@@ -4,7 +4,8 @@
             [clojure.java.jdbc :as jdbc]
             [mount.core :as mount]
             [yuppie-assessment.config]
-            [yuppie-assessment.mysql.client :refer [user-db mysql-conn]]))
+            [yuppie-assessment.mysql.client :refer [user-db mysql-conn]]
+            [yuppie-assessment.users.errors :as errors]))
 
 (defn- clean-database
   "Clean up the test database"
@@ -41,7 +42,20 @@
               :profile_picture_url "https://my.com/pic"}
              (jdbc/query (mysql-conn user-db)
                          ["SELECT * FROM user_profiles WHERE id = ?" (str id)]
-                         {:result-set-fn first}))))))
+                         {:result-set-fn first})))))
+  (testing "throws error on duplicate email address"
+    (let [id (random-uuid)
+          profile {:id id
+                   :first-name "my-first-name"
+                   :last-name "my-last-name"
+                   :email-address "second@there.com"
+                   :profile-picture-url "https://my.com/pic"}]
+      (mysql-repo/insert-user-profile user-db profile)
+      (try
+        (mysql-repo/insert-user-profile user-db profile)
+        (is false "Should have thrown an error")
+        (catch Exception ex (is (= errors/message-already-exists (.getMessage ex))
+                                (= errors/type-already-exists (-> ex ex-data :type))))))))
 
 (deftest ^:integration test-update-user-profile-by-email
   (testing "can do update on existing profile in MySQL db"
