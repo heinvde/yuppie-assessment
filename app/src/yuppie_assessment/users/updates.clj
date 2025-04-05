@@ -4,7 +4,7 @@
             [yuppie-assessment.users.repository.mysql :as mysql-repo]
             [yuppie-assessment.mysql.client :refer [user-db]]))
 
-(defn create-user-with-google-oauth
+(defn create-profile-with-google-oauth
   "Create a new user with Google OAuth code"
   [oauth-code]
   (let [client-spec (config :google)

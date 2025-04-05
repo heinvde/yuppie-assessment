@@ -45,4 +45,4 @@
                                         [keyword? (partial check-profile google-profile)]
                                         nil)]
         (is (check-profile google-profile
-                           (user-updates/create-user-with-google-oauth "my-oauth-code")))))))
+                           (user-updates/create-profile-with-google-oauth "my-oauth-code")))))))

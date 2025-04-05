@@ -39,14 +39,14 @@
     (let [profile (-> request
                       :query-params
                       (get "code")
-                      (user-updates/create-user-with-google-oauth))]
+                      (user-updates/create-profile-with-google-oauth))]
       (-> (str "Welcome " (:first-name profile) " " (:last-name profile) ", your account has successfully been created.")
           (response/response)
           (response/status 200)
           (response/content-type "text/plain")))
     (catch Exception ex
       (if (= (-> ex ex-data :type) user-errors/type-already-exists)
-        (if-let [profile (user-queries/get-user-profile-by-email (-> ex ex-data :profile :email-address))]
+        (if-let [profile (user-queries/get-profile-by-email (-> ex ex-data :profile :email-address))]
           (-> (str "Welcome back " (:first-name profile) " " (:last-name profile) ".")
               (response/response)
               (response/status 200)

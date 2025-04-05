@@ -20,7 +20,7 @@
 
 (deftest test-handle-oauth2-callback
   (testing "can handle oauth2 callback to create new profile"
-    (with-redefs [user-updates/create-user-with-google-oauth
+    (with-redefs [user-updates/create-profile-with-google-oauth
                   (fn [code]
                     (is (= "my-code" code))
                     {:id "my-id"
@@ -33,11 +33,11 @@
         (is (= "Welcome John Doe, your account has successfully been created."
                (-> result :body))))))
   (testing "can handle oauth2 callback to profile already exists"
-    (with-redefs [user-updates/create-user-with-google-oauth
+    (with-redefs [user-updates/create-profile-with-google-oauth
                   (fn [_] (throw (ex-info user-errors/message-already-exists
                                           {:type user-errors/type-already-exists
                                            :profile {:email-address "here@there.com"}})))
-                  user-queries/get-user-profile-by-email
+                  user-queries/get-profile-by-email
                   (fn [email]
                     (is (= "here@there.com" email))
                     {:first-name "John"

@@ -15,4 +15,4 @@
       (with-redefs [mysql-repo/get-user-profile-by-email
                     (test-mock "get-user-profile-by-email" [keyword? #(= email %)] profile)]
         (= profile
-           (user-queries/get-user-profile-by-email email))))))
+           (user-queries/get-profile-by-email email))))))
