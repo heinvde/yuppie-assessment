@@ -42,4 +42,14 @@
   (mount/stop)
   (println "Done."))
 
-(def app (wrap-defaults app-routes site-defaults))
+(defn error-handler [handler]
+  (fn [request]
+    (try
+      (handler request)
+      (catch Exception ex
+        (println ex)
+        handlers/internal-server-error))))
+
+(def app (-> app-routes
+          (wrap-defaults site-defaults)
+          (error-handler)))
