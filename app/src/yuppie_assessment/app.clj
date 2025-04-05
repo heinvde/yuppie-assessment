@@ -5,6 +5,7 @@
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.util.response :as response]
             [yuppie-assessment.handlers :as handlers]
+            [mount.core :as mount]
             [environ.core :refer [env]]))
 
 (def required-env [:google-client-id
@@ -14,6 +15,13 @@
                    (fn [required-vars current-vars]
                      (some #(nil? (get current-vars %)) required-vars))))
 
+(defroutes app-routes
+  (GET "/" [] (response/redirect "/auth/verify"))
+  (GET "/auth/verify" [] (handlers/handle-oauth2-redirect))
+  (GET "/auth/verified" request (handlers/handle-oauth2-callback request))
+  (GET "/check" [] (handlers/handle-health-check))
+  (route/not-found "Not Found"))
+
 (defn init-app
   "Called on initialization of App and used for logging and environment validation."
   []
@@ -22,13 +30,26 @@
     (throw (ex-info
             (str "Missing one or more required environment variables: " (clj-string/join ", " required-env))
             {:required required-env})))
-  (println "Validation successfull"))
+  (println "Validation successfull")
+  (println "Mounting state...")
+  (mount/start)
+  (println "Done."))
 
-(defroutes app-routes
-  (GET "/" [] (response/redirect "/auth/verify"))
-  (GET "/auth/verify" [] (handlers/handle-oauth2-redirect))
-  (GET "/auth/verified" [] "Authenticated successfully")
-  (GET "/check" [] (handlers/handle-health-check))
-  (route/not-found "Not Found"))
+(defn shutdown-app
+  "Called on shutdown of App and used for logging and environment validation."
+  []
+  (println "Shutting down...")
+  (mount/stop)
+  (println "Done."))
 
-(def app (wrap-defaults app-routes site-defaults))
+(defn error-handler [handler]
+  (fn [request]
+    (try
+      (handler request)
+      (catch Exception ex
+        (println ex)
+        handlers/internal-server-error))))
+
+(def app (-> app-routes
+          (wrap-defaults site-defaults)
+          (error-handler)))
