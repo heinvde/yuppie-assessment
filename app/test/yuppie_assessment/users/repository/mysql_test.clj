@@ -31,35 +31,57 @@
           profile {:id id
                    :first-name "my-first-name"
                    :last-name "my-last-name"
-                   :email-address "my-email"}]
+                   :email-address "my-email"
+                   :profile-picture-url "https://my.com/pic"}]
       (mysql-repo/insert-user-profile user-db profile)
       (is (= {:id (str id)
               :first_name "my-first-name"
               :last_name "my-last-name"
               :email "my-email"
-              :profile_picture_url nil}
+              :profile_picture_url "https://my.com/pic"}
              (jdbc/query (mysql-conn user-db)
                          ["SELECT * FROM user_profiles WHERE id = ?" (str id)]
                          {:result-set-fn first}))))))
 
 (deftest ^:integration test-update-user-profile-by-email
-  (testing "can insert new profile into MySQL db"
+  (testing "can do update on existing profile in MySQL db"
     (let [id (random-uuid)
+          email "first@here.com"
           profile {:id id
                    :first-name "my-first-name"
                    :last-name "my-last-name"
-                   :email-address "my-email"}
+                   :email-address email
+                   :profile-picture-url "https://my.com/pic"}
           updated-profile {:id "shouldbeignore"
                            :first-name "my-first-name-2"
                            :last-name "my-last-name-2"
-                           :email-address "my-email"}]
+                           :email-address email}]
       (mysql-repo/insert-user-profile user-db profile)
       (mysql-repo/update-user-profile-by-email user-db (:email-address profile) updated-profile)
       (is (= {:id (str id)
               :first_name "my-first-name-2"
               :last_name "my-last-name-2"
-              :email "my-email"
-              :profile_picture_url nil}
+              :email email
+              :profile_picture_url "https://my.com/pic"}
+             (jdbc/query (mysql-conn user-db)
+                         ["SELECT * FROM user_profiles WHERE id = ?" (str id)]
+                         {:result-set-fn first})))))
+  (testing "can do minimal update on existing profile in MySQL db"
+    (let [id (random-uuid)
+          email "second@here.com"
+          profile {:id id
+                   :first-name "my-first-name"
+                   :last-name "my-last-name"
+                   :email-address email
+                   :profile-picture-url "https://my.com/pic"}
+          updated-profile {:first-name "my-first-name-2"}]
+      (mysql-repo/insert-user-profile user-db profile)
+      (mysql-repo/update-user-profile-by-email user-db (:email-address profile) updated-profile)
+      (is (= {:id (str id)
+              :first_name "my-first-name-2"
+              :last_name "my-last-name"
+              :email email
+              :profile_picture_url "https://my.com/pic"}
              (jdbc/query (mysql-conn user-db)
                          ["SELECT * FROM user_profiles WHERE id = ?" (str id)]
                          {:result-set-fn first}))))))
@@ -70,10 +92,12 @@
           profile {:id id
                    :first-name "my-first-name"
                    :last-name "my-last-name"
-                   :email-address "my-email"}]
+                   :email-address "my-email"
+                   :profile-picture-url "https://my.com/pic"}]
       (mysql-repo/insert-user-profile user-db profile)
       (is (= {:id id
               :first-name "my-first-name"
               :last-name "my-last-name"
-              :email-address "my-email"}
+              :email-address "my-email"
+              :profile-picture-url "https://my.com/pic"}
              (mysql-repo/get-user-profile-by-email user-db (:email-address profile)))))))
