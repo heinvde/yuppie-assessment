@@ -29,6 +29,7 @@
 (deftest ^:integration test-insert-user-profile
   (testing "can insert new profile into MySQL db"
     (let [id (random-uuid)
+          date (str (java.util.Date.))
           profile {:id id
                    :first-name "my-first-name"
                    :last-name "my-last-name"
@@ -39,7 +40,9 @@
               :first_name "my-first-name"
               :last_name "my-last-name"
               :email "my-email"
-              :profile_picture_url "https://my.com/pic"}
+              :profile_picture_url "https://my.com/pic"
+              :date_created date
+              :date_updated date}
              (jdbc/query (mysql-conn user-db)
                          ["SELECT * FROM user_profiles WHERE id = ?" (str id)]
                          {:result-set-fn first})))))
@@ -61,6 +64,7 @@
   (testing "can do update on existing profile in MySQL db"
     (let [id (random-uuid)
           email "first@here.com"
+          date (str (java.util.Date.))
           profile {:id id
                    :first-name "my-first-name"
                    :last-name "my-last-name"
@@ -76,13 +80,16 @@
               :first_name "my-first-name-2"
               :last_name "my-last-name-2"
               :email email
-              :profile_picture_url "https://my.com/pic"}
+              :profile_picture_url "https://my.com/pic"
+              :date_created date
+              :date_updated date}
              (jdbc/query (mysql-conn user-db)
                          ["SELECT * FROM user_profiles WHERE id = ?" (str id)]
                          {:result-set-fn first})))))
   (testing "can do minimal update on existing profile in MySQL db"
     (let [id (random-uuid)
           email "second@here.com"
+          date (str (java.util.Date.))
           profile {:id id
                    :first-name "my-first-name"
                    :last-name "my-last-name"
@@ -95,7 +102,9 @@
               :first_name "my-first-name-2"
               :last_name "my-last-name"
               :email email
-              :profile_picture_url "https://my.com/pic"}
+              :profile_picture_url "https://my.com/pic"
+              :date_created date
+              :date_updated date}
              (jdbc/query (mysql-conn user-db)
                          ["SELECT * FROM user_profiles WHERE id = ?" (str id)]
                          {:result-set-fn first}))))))
@@ -103,15 +112,18 @@
 (deftest ^:integration test-get-user-profile-by-email
   (testing "can insert new profile into MySQL db"
     (let [id (random-uuid)
+          date (str (java.util.Date.))
           profile {:id id
                    :first-name "my-first-name"
                    :last-name "my-last-name"
                    :email-address "my-email"
                    :profile-picture-url "https://my.com/pic"}]
       (mysql-repo/insert-user-profile user-db profile)
-      (is (= {:id id
+      (is (= {:id (str id)
               :first-name "my-first-name"
               :last-name "my-last-name"
               :email-address "my-email"
-              :profile-picture-url "https://my.com/pic"}
+              :profile-picture-url "https://my.com/pic"
+              :date-created date
+              :date-updated date}
              (mysql-repo/get-user-profile-by-email user-db (:email-address profile)))))))

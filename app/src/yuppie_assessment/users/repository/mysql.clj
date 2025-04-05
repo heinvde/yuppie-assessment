@@ -22,7 +22,9 @@
   [db email profile]
   (jdbc/update! (get-db db)
                 profiles-table
-                (model/profile->mysql-update profile)
+                (-> profile
+                    (assoc :date-updated (java.util.Date.))
+                    (model/profile->mysql-update))
                 ["email = ?" email]))
 
 (defn insert-user-profile
@@ -31,7 +33,10 @@
   (try
     (jdbc/insert! (get-db db)
                   profiles-table
-                  (model/profile->mysql-profile profile))
+                  (-> profile
+                      (assoc :date-created (java.util.Date.))
+                      (assoc :date-updated (java.util.Date.))
+                      (model/profile->mysql-profile)))
     (catch Exception e
       (if (instance? MySQLIntegrityConstraintViolationException e)
         (throw (ex-info errors/message-already-exists
