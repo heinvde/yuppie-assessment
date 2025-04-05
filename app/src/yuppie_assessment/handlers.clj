@@ -51,5 +51,5 @@
               (response/response)
               (response/status 200)
               (response/content-type "text/plain"))
-          internal-server-error)
-        internal-server-error))))
+          (throw ex))
+        (throw ex)))))
