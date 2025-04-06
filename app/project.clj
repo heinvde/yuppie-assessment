@@ -10,6 +10,7 @@
                  [mysql/mysql-connector-java "5.1.38"]
                  [com.mchange/c3p0 "0.9.5.2"]
                  [mount "0.1.21"]
+                 [com.novemberain/langohr "5.5.0"]
                  [environ "1.2.0"]]
   :plugins [[lein-ring "0.12.5"]
             [lein-environ "1.2.0"]]
@@ -32,7 +33,11 @@
                        :mysql-users-port 3306
                        :mysql-users-user "root"
                        :mysql-users-password "root"
-                       :mysql-users-db-name "users"}}
+                       :mysql-users-db-name "users"
+                       :rabbitmq-default-host "localhost"
+                       :rabbitmq-default-port 5672
+                       :rabbitmq-default-username "guest"
+                       :rabbitmq-default-password "guest"}}
    :project/test {:dependencies [[javax.servlet/servlet-api "2.5"]
                                  [ring/ring-mock "0.3.2"]]
                   :env {:google-client-id "fake-google-client-id"
@@ -43,4 +48,8 @@
                         :mysql-users-port 3306
                         :mysql-users-user "root"
                         :mysql-users-password "root"
-                        :mysql-users-db-name "users"}}})
+                        :mysql-users-db-name "users"
+                        :rabbitmq-default-host "localhost"
+                        :rabbitmq-default-port 5672
+                        :rabbitmq-default-username "guest"
+                        :rabbitmq-default-password "guest"}}})

@@ -5,6 +5,7 @@
             [yuppie-assessment.users.updates :as user-updates]
             [yuppie-assessment.users.queries :as user-queries]
             [yuppie-assessment.users.errors :as user-errors]
+            [yuppie-assessment.rabbitmq.client :as rmq-client]
             [environ.core :refer [env]]))
 
 (def internal-server-error
@@ -16,6 +17,7 @@
 (defn handle-health-check
   "Returns health check response."
   []
+  (rmq-client/publish-message :check "Ok!")
   (-> {:message "OK"}
       (json/write-str)
       (response/response)

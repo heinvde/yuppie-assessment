@@ -12,4 +12,8 @@
           :google {:client-id (env :google-client-id)
                    :client-secret (env :google-client-secret)
                    :oauth2 {:redirect-uri (env :google-oauth2-redirect-uri)
-                            :state-key (env :google-oauth2-state-key)}}})
+                            :state-key (env :google-oauth2-state-key)}}
+          :rabbitmq {:default {:host (env :rabbitmq-default-host)
+                               :port (env :rabbitmq-default-port)
+                               :username (env :rabbitmq-default-username)
+                               :password (env :rabbitmq-default-password)}}})
