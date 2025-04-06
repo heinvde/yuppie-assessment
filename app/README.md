@@ -22,7 +22,7 @@ Once profiles.clj is configured, you can start the development server using:
 lein ring server
 ```
 
-**NOTE:** You have to run the local database [Running local database](../README.md#running-local-database)
+**NOTE:** You have to run the local infrastructure [Running local infrastructure](../README.md#running-local-infrastructure)
 
 ## Running tests
 
@@ -42,7 +42,7 @@ Run integration tests with
 lein test :integration
 ```
 
-**NOTE:** You have to run local database for integration tests to pass see [Running local database](../README.md#running-local-database)
+**NOTE:** You have to run local infrastructure for integration tests to pass see [Running local infrastructure](../README.md#running-local-infrastructure)
 
 #### All tests
 
@@ -52,4 +52,4 @@ Run all tests
 lein test :all
 ```
 
-**NOTE:** You have to run local database for all tests to pass see [Running local database](../README.md#running-local-database)
+**NOTE:** You have to run local infrastructure for all tests to pass see [Running local infrastructure](../README.md#running-local-infrastructure)
