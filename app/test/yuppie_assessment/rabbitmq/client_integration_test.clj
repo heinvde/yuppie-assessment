@@ -4,7 +4,7 @@
             [yuppie-assessment.config]
             [yuppie-assessment.rabbitmq.client :as client]
             [langohr.queue :as lq]
-            [yuppie-assessment.rabbitmq.queues :refer [queues health-check-consumer]]))
+            [yuppie-assessment.rabbitmq.queues :refer [queues]]))
 
 (deftest ^:integration can-publish-health-check
   (mount/start #'yuppie-assessment.config/config

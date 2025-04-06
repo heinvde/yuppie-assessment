@@ -7,7 +7,8 @@
             [langohr.exchange :as le]
             [mount.core :refer [defstate]]
             [clojure.data.json :as json]
-            [yuppie-assessment.rabbitmq.queues :refer [queues consumers]]
+            [yuppie-assessment.rabbitmq.queues :refer [queues]]
+            [yuppie-assessment.rabbitmq.consumers :refer [consumers]]
             [yuppie-assessment.config :refer [config]]))
 
 (declare conn-default)
