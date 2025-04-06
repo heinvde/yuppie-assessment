@@ -42,16 +42,3 @@
                    :email-address "my-email"}]
       (is (check-profile profile
                          (user-updates/create-profile profile))))))
-
-(deftest update-profile-by-id
-  (testing "can update a user"
-    (with-redefs [client/publish-map (fn [_ _])]
-      (let [id (str (random-uuid))
-            profile {:id id
-                     :first-name "my-first-name"
-                     :last-name "my-last-name"
-                     :email-address "me@here.com"}]
-        (user-updates/update-profile-by-id id {:first-name "my-updated-name"})
-        (is (check-profile (assoc profile :first-name "my-updated-name")
-                           (user-queries/get-profile-by-email "me@here.com")))))))
-

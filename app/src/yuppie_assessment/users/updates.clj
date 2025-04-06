@@ -6,11 +6,6 @@
             [yuppie-assessment.rabbitmq.queues :as rmq-queue]
             [yuppie-assessment.mysql.client :refer [user-db]]))
 
-(defn update-profile-by-id
-  "Update user profile by id"
-  [id profile]
-  (mysql-repo/update-user-profile-by-id user-db id profile))
-
 (defn create-profile
   "Create a new user profile"
   [profile]
