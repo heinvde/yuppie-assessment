@@ -3,6 +3,7 @@
             [mount.core :as mount]
             [yuppie-assessment.assert-helpers :refer [test-mock contains-many?]]
             [yuppie-assessment.config]
+            [yuppie-assessment.rabbitmq.client :as rmq-client]
             [yuppie-assessment.google.client :as google]
             [yuppie-assessment.users.repository.mysql :as mysql-repo]
             [yuppie-assessment.users.updates :as user-updates]))
@@ -43,6 +44,10 @@
         mysql-repo/insert-user-profile (test-mock
                                         "insert-user-profile"
                                         [keyword? (partial check-profile google-profile)]
-                                        nil)]
+                                        nil)
+        rmq-client/publish-map (test-mock
+                                "rmq-publish-map"
+                                [keyword? (partial check-profile google-profile)]
+                                nil)]
         (is (check-profile google-profile
                            (user-updates/create-profile-with-google-oauth "my-oauth-code")))))))
