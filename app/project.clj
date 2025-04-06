@@ -11,7 +11,8 @@
                  [com.mchange/c3p0 "0.9.5.2"]
                  [mount "0.1.21"]
                  [com.novemberain/langohr "5.5.0"]
-                 [environ "1.2.0"]]
+                 [environ "1.2.0"]
+                 [com.cloudinary/cloudinary-http5 "2.0.0"]]
   :plugins [[lein-ring "0.12.5"]
             [lein-environ "1.2.0"]]
   :repl-options {:init-ns yuppie-assessment.app}

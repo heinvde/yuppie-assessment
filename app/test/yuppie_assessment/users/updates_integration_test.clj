@@ -2,12 +2,11 @@
   (:require [clojure.test :refer :all]
             [mount.core :as mount]
             [clojure.java.jdbc :as jdbc]
-            [yuppie-assessment.assert-helpers :refer [test-mock contains-many?]]
             [yuppie-assessment.config]
             [yuppie-assessment.mysql.client :refer [mysql-conn user-db]]
-            [yuppie-assessment.rabbitmq.client :as rmq-client]
-            [yuppie-assessment.google.client :as google]
+            [yuppie-assessment.rabbitmq.client :as client]
             [yuppie-assessment.users.repository.mysql :as mysql-repo]
+            [yuppie-assessment.users.queries :as user-queries]
             [yuppie-assessment.users.updates :as user-updates]))
 
 (def check-profile
@@ -42,4 +41,17 @@
                    :last-name "my-last-name"
                    :email-address "my-email"}]
       (is (check-profile profile
-                         (#'user-updates/create-profile profile))))))
+                         (user-updates/create-profile profile))))))
+
+(deftest update-profile-by-id
+  (testing "can update a user"
+    (with-redefs [client/publish-map (fn [_ _])]
+      (let [id (str (random-uuid))
+            profile {:id id
+                     :first-name "my-first-name"
+                     :last-name "my-last-name"
+                     :email-address "me@here.com"}]
+        (user-updates/update-profile-by-id id {:first-name "my-updated-name"})
+        (is (check-profile (assoc profile :first-name "my-updated-name")
+                           (user-queries/get-profile-by-email "me@here.com")))))))
+

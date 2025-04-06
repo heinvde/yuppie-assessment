@@ -10,7 +10,8 @@ To start the server with the correct environment variables:
 ```clj
 {:profiles/dev {:env {:google-client-id "!Your google OAuth2 client ID"
                       :google-client-secret "!Your google OAuth2 client secret"
-                      :google-oauth2-state-key "!Any string that will be used to verify requests"}}}
+                      :google-oauth2-state-key "!Any string that will be used to verify requests"
+                      :cloudinary-url "cloudinary://{API_KEY}:{API_SECRET}@{CLOUD_NAME}"}}}
 ```
 
 ## Start the development server

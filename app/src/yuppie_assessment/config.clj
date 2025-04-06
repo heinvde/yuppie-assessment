@@ -16,4 +16,5 @@
           :rabbitmq {:default {:host (env :rabbitmq-default-host)
                                :port (env :rabbitmq-default-port)
                                :username (env :rabbitmq-default-username)
-                               :password (env :rabbitmq-default-password)}}})
+                               :password (env :rabbitmq-default-password)}}
+          :cloudinary {:url (env :cloudinary-url)}})
