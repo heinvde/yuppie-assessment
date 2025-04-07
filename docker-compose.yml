@@ -10,3 +10,12 @@ services:
       - "./databases/users:/docker-entrypoint-initdb.d"
     ports:
       - "3306:3306"
+
+  yc-rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest

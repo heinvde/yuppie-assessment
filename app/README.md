@@ -10,7 +10,8 @@ To start the server with the correct environment variables:
 ```clj
 {:profiles/dev {:env {:google-client-id "!Your google OAuth2 client ID"
                       :google-client-secret "!Your google OAuth2 client secret"
-                      :google-oauth2-state-key "!Any string that will be used to verify requests"}}}
+                      :google-oauth2-state-key "!Any string that will be used to verify requests"
+                      :cloudinary-url "cloudinary://{API_KEY}:{API_SECRET}@{CLOUD_NAME}"}}}
 ```
 
 ## Start the development server
@@ -21,7 +22,7 @@ Once profiles.clj is configured, you can start the development server using:
 lein ring server
 ```
 
-**NOTE:** You have to run the local database [Running local database](../README.md#running-local-database)
+**NOTE:** You have to run the local infrastructure [Running local infrastructure](../README.md#running-local-infrastructure)
 
 ## Running tests
 
@@ -41,7 +42,7 @@ Run integration tests with
 lein test :integration
 ```
 
-**NOTE:** You have to run local database for integration tests to pass see [Running local database](../README.md#running-local-database)
+**NOTE:** You have to run local infrastructure for integration tests to pass see [Running local infrastructure](../README.md#running-local-infrastructure)
 
 #### All tests
 
@@ -51,4 +52,4 @@ Run all tests
 lein test :all
 ```
 
-**NOTE:** You have to run local database for all tests to pass see [Running local database](../README.md#running-local-database)
+**NOTE:** You have to run local infrastructure for all tests to pass see [Running local infrastructure](../README.md#running-local-infrastructure)
