@@ -5,8 +5,7 @@
             [yuppie-assessment.users.updates :as user-updates]
             [yuppie-assessment.users.queries :as user-queries]
             [yuppie-assessment.users.errors :as user-errors]
-            [yuppie-assessment.config :refer [config]]
-            [environ.core :refer [env]]))
+            [yuppie-assessment.config :refer [config]]))
 
 (def internal-server-error
   (-> "Internal Server Error"
@@ -32,11 +31,11 @@
 (defn handle-oauth2-redirect
   "Redirects to Google OAuth2 authentication."
   []
-  (-> (google/get-oath2-request-url {:client-id (env :google-client-id)
-                                     :redirect-uri (env :google-oauth2-redirect-uri)
+  (-> (google/get-oath2-request-url {:client-id (-> config :google :client-id)
+                                     :redirect-uri (-> config :google :oauth2 :redirect-uri)
                                      :scopes [(google/scopes :user-email)
                                               (google/scopes :user-profile)]
-                                     :state (env :google-oauth2-state-key)})
+                                     :state (-> config :google :oauth2 :state-key)})
       (response/redirect)))
 
 (defn handle-oauth2-callback

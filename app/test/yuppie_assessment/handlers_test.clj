@@ -14,6 +14,12 @@
             :body "{\"message\":\"OK\"}"}
            (handlers/handle-health-check)))))
 
+(use-fixtures :once
+  (fn [run-tests]
+    (mount/start #'yuppie-assessment.config/config)
+    (run-tests)
+    (mount/stop)))
+
 (deftest handle-oauth2-redirect
   (testing "returns redirect response with oauth2 url"
     (let [result (handlers/handle-oauth2-redirect)]
@@ -21,12 +27,6 @@
       (is (string? (-> result :headers (get "Location")))))))
 
 (def state-key (fn [] (-> config :google :oauth2 :state-key)))
-
-(use-fixtures :once
-  (fn [run-tests]
-    (mount/start #'yuppie-assessment.config/config)
-    (run-tests)
-    (mount/stop)))
 
 (deftest test-handle-oauth2-callback
   (testing "can handle oauth2 callback to create new profile"
