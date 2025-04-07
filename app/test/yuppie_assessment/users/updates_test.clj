@@ -1,6 +1,7 @@
 (ns yuppie-assessment.users.updates-test
   (:require [clojure.test :refer :all]
             [mount.core :as mount]
+            [yuppie-assessment.cloudinary.client :as cloudinary]
             [yuppie-assessment.assert-helpers :refer [test-mock contains-many?]]
             [yuppie-assessment.config]
             [yuppie-assessment.rabbitmq.client :as rmq-client]
@@ -18,7 +19,7 @@
 
 (use-fixtures :once
   (fn [run-tests]
-    (mount/start #'yuppie-assessment.config/config)
+    (mount/start)
     (run-tests)
     (mount/stop)))
 
@@ -47,7 +48,26 @@
                                         nil)
         rmq-client/publish-map (test-mock
                                 "rmq-publish-map"
-                                [keyword? (partial check-profile google-profile)]
+                                [map? (partial check-profile google-profile)]
                                 nil)]
         (is (check-profile google-profile
                            (user-updates/create-profile-with-google-oauth "my-oauth-code")))))))
+
+
+(deftest test-upload-profile-picture-to-cloudinary
+  (testing "can upload profile picture"
+    (let [id "my-id"
+          picture-url "https://my.com/pic"
+          profile {:id id
+                   :first-name "my-first-name"
+                   :last-name "my-last-name"
+                   :profile-picture-url "https://my.com/pic"}]
+      (with-redefs [cloudinary/upload-image-from-url
+                    (fn [_ url]
+                      (is (= picture-url url))
+                      {:url "https://my.fancy.com/pic"})
+                    mysql-repo/get-user-profile-by-id
+                    (fn [_ id]
+                      (is (= "my-id" id))
+                      profile)]
+        (user-updates/upload-profile-picture-to-cloudinary id)))))

@@ -19,14 +19,6 @@
                     (model/profile->mysql-update))
                 query-vector))
 
-(defn get-user-profile-by-email
-  "Get user profile by email from MySQL db"
-  [db email]
-  (let [result (jdbc/query (get-db db)
-                           ["SELECT * FROM user_profiles WHERE email = ?" email]
-                           {:result-set-fn first})]
-    (when result (model/mysql-profile->profile result))))
-
 (defn update-user-profile-by-id
   "Update user profile for id in MySQL db"
   [db id profile]
@@ -53,3 +45,19 @@
                         {:type errors/type-already-exists
                          :profile profile}))
         (throw e)))))
+
+(defn get-user-profile-by-email
+  "Get user profile by email from MySQL db"
+  [db email]
+  (let [result (jdbc/query (get-db db)
+                           ["SELECT * FROM user_profiles WHERE email = ?" email]
+                           {:result-set-fn first})]
+    (when result (model/mysql-profile->profile result))))
+
+(defn get-user-profile-by-id
+  "Get user profile by id from MySQL db"
+  [db id]
+  (let [result (jdbc/query (get-db db)
+                           ["SELECT * FROM user_profiles WHERE id = ?" id]
+                           {:result-set-fn first})]
+    (when result (model/mysql-profile->profile result))))

@@ -1,14 +1,17 @@
 (ns yuppie-assessment.rabbitmq.consumers
-  (:require [yuppie-assessment.users.rabbitmq.consumers :as user-consumers]
-            [yuppie-assessment.rabbitmq.queues :refer [profile-created-queue]]))
+  (:require [yuppie-assessment.rabbitmq.queues :refer [health-check-queue]]
+            [yuppie-assessment.rabbitmq.client :as rabbitmq]
+            [mount.core :refer [defstate]]))
 
-(defn health-check-consumer [_ _ ^bytes payload] (println "I got oh yes message:" (String. payload)))
+(declare health-check-consumer)
 
-(def consumers
-  {:check {:handler health-check-consumer
-           :queue :check
-           :opts {:auto-ack true}}
+(defstate health-check-consumer
+  :start (let [handler (fn [_ _ ^bytes payload]
+                         (println "I got the message:" (String. payload)))
+               consumer {:handler handler
+                         :queue health-check-queue
+                         :opts {:auto-ack true}}]
+           (-> health-check-queue
+               :channel
+               (rabbitmq/create-consumer consumer))))
 
-   :upload-profile-picture {:handler user-consumers/upload-profile-picture
-                            :queue profile-created-queue
-                            :opts {:auto-ack true}}})

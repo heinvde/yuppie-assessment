@@ -39,6 +39,7 @@
   (testing "can create user"
     (let [profile {:first-name "my-first-name"
                    :last-name "my-last-name"
-                   :email-address "my-email"}]
+                   :email-address "my-email"
+                   :profile-picture-url "https://cloudinary-devs.github.io/cld-docs-assets/assets/images/coffee_cup.jpg"}]
       (is (check-profile profile
                          (user-updates/create-profile profile))))))
