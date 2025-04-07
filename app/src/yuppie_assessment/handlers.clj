@@ -1,6 +1,7 @@
 (ns yuppie-assessment.handlers
   (:require [clojure.data.json :as json]
             [ring.util.response :as response]
+            [yuppie-assessment.logger :refer [log-warning]]
             [yuppie-assessment.google.client :as google]
             [yuppie-assessment.users.updates :as user-updates]
             [yuppie-assessment.users.queries :as user-queries]
@@ -59,7 +60,7 @@
             (= (-> ex ex-data :type) google/error-authentication))]
     (if (not (check-state-key request (:google config)))
       ; state key mismatch send 401
-      (do (println "ERROR: Google OAuth2 state key mismatch.")
+      (do (log-warning "Google OAuth2 state key mismatch. This might be an attack on the server.")
           unauthorized-error)
       (try
         (-> request
