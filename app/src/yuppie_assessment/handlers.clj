@@ -5,6 +5,7 @@
             [yuppie-assessment.users.updates :as user-updates]
             [yuppie-assessment.users.queries :as user-queries]
             [yuppie-assessment.users.errors :as user-errors]
+            [yuppie-assessment.config :refer [config]]
             [environ.core :refer [env]]))
 
 (def internal-server-error
@@ -12,6 +13,12 @@
       (response/response)
       (response/content-type "text/plain")
       (response/status 500)))
+
+(def unauthorized-error
+  (-> "Unauthorized"
+      (response/response)
+      (response/content-type "text/plain")
+      (response/status 401)))
 
 (defn handle-health-check
   "Returns health check response."
@@ -35,21 +42,40 @@
 (defn handle-oauth2-callback
   "Handles the OAuth2 callback from Google."
   [request]
-  (try
-    (let [profile (-> request
-                      :query-params
-                      (get "code")
-                      (user-updates/create-profile-with-google-oauth))]
-      (-> (str "Welcome " (:first-name profile) " " (:last-name profile) ", your account has successfully been created.")
-          (response/response)
-          (response/status 200)
-          (response/content-type "text/plain")))
-    (catch Exception ex
-      (if (= (-> ex ex-data :type) user-errors/type-already-exists)
-        (if-let [profile (user-queries/get-profile-by-email (-> ex ex-data :profile :email-address))]
-          (-> (str "Welcome back " (:first-name profile) " " (:last-name profile) ".")
-              (response/response)
-              (response/status 200)
-              (response/content-type "text/plain"))
-          (throw ex))
-        (throw ex)))))
+  (letfn [(check-state-key [request google-config]
+            (= (-> request :query-params (get "state"))
+               (-> google-config :oauth2 :state-key)))
+          (welcome-message [profile]
+            (str "Welcome " (:first-name profile) " " (:last-name profile) ", your account has successfully been created."))
+          (welcome-back-message [profile]
+            (str "Welcome back " (:first-name profile) " " (:last-name profile) "."))
+          (send-response [message]
+            (-> message
+                (response/response)
+                (response/content-type "text/plain")
+                (response/status 200)))
+          (profile-exists-exception? [ex]
+            (= (-> ex ex-data :type) user-errors/type-already-exists))
+          (google-auth-exception? [ex]
+            (= (-> ex ex-data :type) google/error-authentication))]
+    (if (not (check-state-key request (:google config)))
+      ; state key mismatch send 401
+      (do (println "ERROR: Google OAuth2 state key mismatch.")
+          unauthorized-error)
+      (try
+        (-> request
+            :query-params
+            (get "code")
+            (user-updates/create-profile-with-google-oauth)
+            (welcome-message)
+            (send-response))
+        (catch Exception ex
+          (cond
+            (google-auth-exception? ex) unauthorized-error
+            (profile-exists-exception? ex) (-> (ex-data ex)
+                                               :profile
+                                               :email-address
+                                               (user-queries/get-profile-by-email)
+                                               (welcome-back-message)
+                                               (send-response))
+            :else (throw ex)))))))
