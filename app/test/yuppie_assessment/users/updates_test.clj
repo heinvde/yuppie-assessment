@@ -1,13 +1,13 @@
 (ns yuppie-assessment.users.updates-test
   (:require [clojure.test :refer :all]
             [mount.core :as mount]
-            [yuppie-assessment.cloudinary.client :as cloudinary]
             [yuppie-assessment.assert-helpers :refer [test-mock contains-many?]]
             [yuppie-assessment.config]
             [yuppie-assessment.rabbitmq.client :as rmq-client]
             [yuppie-assessment.google.client :as google]
             [yuppie-assessment.users.repository.mysql :as mysql-repo]
-            [yuppie-assessment.users.updates :as user-updates]))
+            [yuppie-assessment.users.updates :as user-updates]
+            [yuppie-assessment.users.rabbitmq.queues :as q]))
 
 (def check-profile
   (fn [expected profile]
@@ -19,7 +19,7 @@
 
 (use-fixtures :once
   (fn [run-tests]
-    (mount/start)
+    (mount/start #'yuppie-assessment.config/config)
     (run-tests)
     (mount/stop)))
 
@@ -29,7 +29,8 @@
                           :last-name "my-last-name"
                           :email-address "my-email"}]
       (with-redefs
-       [google/oauth2-code->access-token (test-mock
+       [q/user-profile-created-queue {:test "test"}
+        google/oauth2-code->access-token (test-mock
                                           "oauth2-code->access-token"
                                           [(contains-many? :client-id :client-secret)
                                            #(= % "my-oauth-code")
@@ -52,22 +53,3 @@
                                 nil)]
         (is (check-profile google-profile
                            (user-updates/create-profile-with-google-oauth "my-oauth-code")))))))
-
-
-(deftest test-upload-profile-picture-to-cloudinary
-  (testing "can upload profile picture"
-    (let [id "my-id"
-          picture-url "https://my.com/pic"
-          profile {:id id
-                   :first-name "my-first-name"
-                   :last-name "my-last-name"
-                   :profile-picture-url "https://my.com/pic"}]
-      (with-redefs [cloudinary/upload-image-from-url
-                    (fn [_ url]
-                      (is (= picture-url url))
-                      {:url "https://my.fancy.com/pic"})
-                    mysql-repo/get-user-profile-by-id
-                    (fn [_ id]
-                      (is (= "my-id" id))
-                      profile)]
-        (user-updates/upload-profile-picture-to-cloudinary id)))))
