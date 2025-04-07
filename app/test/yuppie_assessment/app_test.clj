@@ -1,8 +1,16 @@
 (ns yuppie-assessment.app-test
   (:require [clojure.test :refer :all]
             [yuppie-assessment.app :refer :all]
+            [yuppie-assessment.config]
+            [mount.core :as mount]
             [ring.mock.request :as mock]
             [clojure.data.json :as json]))
+
+(use-fixtures :once
+  (fn [run-tests]
+    (mount/start #'yuppie-assessment.config/config)
+    (run-tests)
+    (mount/stop)))
 
 (deftest test-validate-env
   (testing "Validating environment variable does not exist"

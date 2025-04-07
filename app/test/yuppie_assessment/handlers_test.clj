@@ -1,5 +1,7 @@
 (ns yuppie-assessment.handlers-test
   (:require [clojure.test :refer :all]
+            [mount.core :as mount]
+            [yuppie-assessment.config :refer [config]]
             [yuppie-assessment.handlers :as handlers]
             [yuppie-assessment.users.updates :as user-updates]
             [yuppie-assessment.users.queries :as user-queries]
@@ -12,11 +14,19 @@
             :body "{\"message\":\"OK\"}"}
            (handlers/handle-health-check)))))
 
+(use-fixtures :once
+  (fn [run-tests]
+    (mount/start #'yuppie-assessment.config/config)
+    (run-tests)
+    (mount/stop)))
+
 (deftest handle-oauth2-redirect
   (testing "returns redirect response with oauth2 url"
     (let [result (handlers/handle-oauth2-redirect)]
       (is (= 302 (:status result)))
       (is (string? (-> result :headers (get "Location")))))))
+
+(def state-key (fn [] (-> config :google :oauth2 :state-key)))
 
 (deftest test-handle-oauth2-callback
   (testing "can handle oauth2 callback to create new profile"
@@ -27,7 +37,7 @@
                      :first-name "John"
                      :last-name "Doe"
                      :email-address "me@there.com"})]
-      (let [request {:query-params {"code" "my-code"}}
+      (let [request {:query-params {"code" "my-code" "state" (state-key)}}
             result (handlers/handle-oauth2-callback request)]
         (is (= 200 (:status result)))
         (is (= "Welcome John Doe, your account has successfully been created."
@@ -42,8 +52,14 @@
                     (is (= "here@there.com" email))
                     {:first-name "John"
                      :last-name "Doe"})]
-      (let [request {:query-params {"code" "my-code"}}
+      (let [request {:query-params {"code" "my-code" "state" (state-key)}}
             result (handlers/handle-oauth2-callback request)]
         (is (= 200 (:status result)))
         (is (= "Welcome back John Doe."
-               (-> result :body)))))))
+               (-> result :body))))))
+  (testing "can handle oauth2 callback invalid state key"
+    (let [request {:query-params {"code" "my-code" "state" "invalidstatekeyx"}}
+          result (handlers/handle-oauth2-callback request)]
+      (is (= 401 (:status result)))
+      (is (= "Unauthorized"
+             (-> result :body))))))
