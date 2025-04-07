@@ -10,7 +10,7 @@
 (defn create-profile
   "Create a new user profile"
   [profile]
-  (let [profile-id (-> random-uuid str)
+  (let [profile-id (-> (random-uuid) str)
         profile (assoc profile :id profile-id)]
     (mysql-repo/insert-user-profile user-db profile)
     (rmq-client/publish-map q/user-profile-created-queue profile)
