@@ -79,3 +79,21 @@
                                                (welcome-back-message)
                                                (send-response))
             :else (throw ex)))))))
+
+(defn handle-get-user-profile
+  "Handles the GET request for user profile."
+  [request]
+  (if-let [profile (-> request
+                       :params
+                       :id
+                       (user-queries/get-profile-by-id))]
+    (-> profile
+        (json/write-str)
+        (response/response)
+        (response/content-type "application/json")
+        (response/status 200))
+    (-> {:message "User not found"}
+        (json/write-str)
+        (response/response)
+        (response/content-type "application/json")
+        (response/status 404))))

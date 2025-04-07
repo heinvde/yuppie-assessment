@@ -21,6 +21,7 @@
   (GET "/auth/verify" [] (handlers/handle-oauth2-redirect))
   (GET "/auth/verified" request (handlers/handle-oauth2-callback request))
   (GET "/check" [] (handlers/handle-health-check))
+  (GET "/users/:id/profile" request (handlers/handle-get-user-profile request))
   (route/not-found "Not Found"))
 
 (defn init-app

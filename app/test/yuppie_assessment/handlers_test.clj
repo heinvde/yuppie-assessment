@@ -1,6 +1,7 @@
 (ns yuppie-assessment.handlers-test
   (:require [clojure.test :refer :all]
             [mount.core :as mount]
+            [clojure.data.json :as json]
             [yuppie-assessment.config :refer [config]]
             [yuppie-assessment.handlers :as handlers]
             [yuppie-assessment.users.updates :as user-updates]
@@ -63,3 +64,24 @@
       (is (= 401 (:status result)))
       (is (= "Unauthorized"
              (-> result :body))))))
+
+(deftest test-handle-get-user-profile
+  (testing "can handle get user profile by id"
+    (with-redefs [user-queries/get-profile-by-id
+                  (fn [id]
+                    (is (= "my-id" id))
+                    {:first-name "John"
+                     :last-name "Doe"})]
+      (let [request {:params {:id "my-id"}}
+            result (handlers/handle-get-user-profile request)]
+        (is (= 200 (:status result)))
+        (is (= (json/write-str {:first-name "John" :last-name "Doe"})
+               (-> result :body))))))
+  (testing "can handle get user profile by id not found"
+    (with-redefs [user-queries/get-profile-by-id
+                  (fn [_] nil)]
+      (let [request {:params {:id "my-id"}}
+            result (handlers/handle-get-user-profile request)]
+        (is (= 404 (:status result)))
+        (is (= (json/write-str {:message "User not found"})
+               (-> result :body)))))))
