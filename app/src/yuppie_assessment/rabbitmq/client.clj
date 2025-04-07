@@ -43,8 +43,8 @@
   ([queue payload]
    (publish-message queue payload {}))
   ([queue payload metadata]
-   (let [{:keys [name exchange-name publish-metadata]} queue]
-     (lb/publish channel-default
+   (let [{:keys [name channel exchange-name publish-metadata]} queue]
+     (lb/publish channel
                  exchange-name
                  name
                  payload
