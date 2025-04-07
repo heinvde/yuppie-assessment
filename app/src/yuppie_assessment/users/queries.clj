@@ -6,3 +6,8 @@
   "Get user profile by email"
   [email]
   (mysql-repo/get-user-profile-by-email user-db email))
+
+(defn get-profile-by-id
+  "Get user profile by id"
+  [id]
+  (mysql-repo/get-user-profile-by-id user-db id))
