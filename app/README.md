@@ -16,7 +16,7 @@ To start the server with the correct environment variables:
 
 ## Start the development server
 
-Once profiles.clj is configured, you can start the development server using:
+Once `profiles.clj` is configured, you can start the development server using:
 
 ```sh
 lein ring server
