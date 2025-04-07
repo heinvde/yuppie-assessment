@@ -35,7 +35,7 @@
     (clean-database)
     (run-tests)))
 
-(deftest test-create-user
+(deftest ^:integration test-create-user
   (testing "can create user"
     (let [profile {:first-name "my-first-name"
                    :last-name "my-last-name"
