@@ -25,7 +25,7 @@
   (route/not-found "Not Found"))
 
 (defn init-app
-  "Called on initialization of App and used for logging and environment validation."
+  "Called on initialization to mount app state."
   []
   (log-info "Validating server startup...")
   (when (not (validate-env required-env env))
@@ -38,7 +38,7 @@
   (log-info "Done."))
 
 (defn shutdown-app
-  "Called on shutdown of App and used for logging and environment validation."
+  "Called on shutdown of to disconnect app state."
   []
   (log-info "Shutting down...")
   (mount/stop)
