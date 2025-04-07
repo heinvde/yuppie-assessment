@@ -6,7 +6,8 @@
             [ring.util.response :as response]
             [yuppie-assessment.handlers :as handlers]
             [mount.core :as mount]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [yuppie-assessment.logger :refer [log-info log-error]]))
 
 (def required-env [:google-client-id
                    :google-client-secret
@@ -25,29 +26,29 @@
 (defn init-app
   "Called on initialization of App and used for logging and environment validation."
   []
-  (println "Validating server startup...")
+  (log-info "Validating server startup...")
   (when (not (validate-env required-env env))
     (throw (ex-info
             (str "Missing one or more required environment variables: " (clj-string/join ", " required-env))
             {:required required-env})))
-  (println "Validation successfull")
-  (println "Mounting state...")
+  (log-info "Validation successfull")
+  (log-info "Mounting state...")
   (mount/start)
-  (println "Done."))
+  (log-info "Done."))
 
 (defn shutdown-app
   "Called on shutdown of App and used for logging and environment validation."
   []
-  (println "Shutting down...")
+  (log-info "Shutting down...")
   (mount/stop)
-  (println "Done."))
+  (log-info "Done."))
 
 (defn error-handler [handler]
   (fn [request]
     (try
       (handler request)
       (catch Exception ex
-        (println ex)
+        (log-error ex)
         handlers/internal-server-error))))
 
 (def app (-> app-routes

@@ -7,15 +7,16 @@
             [langohr.exchange :as le]
             [mount.core :refer [defstate]]
             [clojure.data.json :as json]
-            [yuppie-assessment.config :refer [config]]))
+            [yuppie-assessment.config :refer [config]]
+            [yuppie-assessment.logger :refer [log-info]]))
 
 (declare conn-default)
 (declare channel-default)
 
 (defstate conn-default
   :start (do
-           (println "Creating RabbitMQ connection...")
-           (println "RabbitMQ host: " (-> config :rabbitmq :default :host))
+           (log-info "Creating RabbitMQ connection...")
+           (log-info "RabbitMQ host: " (-> config :rabbitmq :default :host))
            (lcore/connect {:host (-> config :rabbitmq :default :host)
                            :port (-> config :rabbitmq :default :port Integer/parseInt)
                            :username (-> config :rabbitmq :default :username)
