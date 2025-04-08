@@ -1,5 +1,14 @@
 # Yuppiechef Application
 
+## Getting started
+
+Install the following tools to get started:
+
+ - Java OpenJDK 21
+ - [Clojure](https://clojure.org/guides/install_clojure)
+ - [Leiningen](https://leiningen.org/)
+ - [Docker Compose](https://docs.docker.com/compose/install/)
+
 ## Setting up the environment
 
 To start the server with the correct environment variables:
@@ -14,6 +23,12 @@ To start the server with the correct environment variables:
                       :cloudinary-url "cloudinary://{API_KEY}:{API_SECRET}@{CLOUD_NAME}"}}}
 ```
 
+## Install dependencies
+
+```sh
+lein deps
+```
+
 ## Start the development server
 
 Once `profiles.clj` is configured, you can start the development server using:
@@ -21,8 +36,7 @@ Once `profiles.clj` is configured, you can start the development server using:
 ```sh
 lein ring server
 ```
-
-**NOTE:** You have to run the local infrastructure [Running local infrastructure](../README.md#running-local-infrastructure)
+> **Note:** You must also run the local infrastructure [Running local infrastructure](../README.md#running-local-infrastructure)
 
 ## Running tests
 
@@ -41,8 +55,7 @@ Run integration tests with
 ```sh
 lein test :integration
 ```
-
-**NOTE:** You have to run local infrastructure for integration tests to pass see [Running local infrastructure](../README.md#running-local-infrastructure)
+> **Note:** You must also run the local infrastructure [Running local infrastructure](../README.md#running-local-infrastructure)
 
 #### All tests
 
@@ -51,5 +64,4 @@ Run all tests
 ```sh
 lein test :all
 ```
-
-**NOTE:** You have to run local infrastructure for all tests to pass see [Running local infrastructure](../README.md#running-local-infrastructure)
+> **Note:** You must also run the local infrastructure [Running local infrastructure](../README.md#running-local-infrastructure)
