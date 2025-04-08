@@ -11,7 +11,17 @@
 
 (def required-env [:google-client-id
                    :google-client-secret
-                   :google-oauth2-redirect-uri])
+                   :google-oauth2-redirect-uri
+                   :mysql-users-host
+                   :mysql-users-port
+                   :mysql-users-user
+                   :mysql-users-password
+                   :mysql-users-db-name
+                   :rabbitmq-default-host
+                   :rabbitmq-default-port
+                   :rabbitmq-default-username
+                   :rabbitmq-default-password
+                   :cloudinary-url])
 (def validate-env (complement
                    (fn [required-vars current-vars]
                      (some #(nil? (get current-vars %)) required-vars))))
@@ -28,7 +38,14 @@
   "Called on initialization to mount app state."
   []
   (log-info "Validating server startup...")
+  (let [missing-vars (filter #(nil? (get env %)) required-env)
+        message (str "Missing environment variables: " (clj-string/join "," missing-vars))]
+    (when (not (empty? missing-vars))
+      (log-error message)
+      (throw (ex-info message {:required missing-vars}))))
   (when (not (validate-env required-env env))
+    (log-error "Missing environment variables:"
+               (clj-string/join "," (filter #(-> env (get %) nil?) required-env)))
     (throw (ex-info
             (str "Missing one or more required environment variables: " (clj-string/join ", " required-env))
             {:required required-env})))
