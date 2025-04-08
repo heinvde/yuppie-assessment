@@ -1,0 +1,35 @@
+version: '3.4'
+
+services:
+  yc-app:
+    image: yc-assessment-app:latest
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - yc-mysql-users
+      - yc-rabbitmq
+    environment:
+      - MYSQL_USERS_HOST=yc-mysql-users
+      - RABBITMQ_DEFAULT_HOST=yc-rabbitmq
+
+  yc-mysql-users:
+    image: mysql:5.7
+    environment:
+      - "MYSQL_ROOT_PASSWORD=root"
+      - "MYSQL_DATABASE=users"
+    volumes:
+      - "./databases/users:/docker-entrypoint-initdb.d"
+    ports:
+      - "3306:3306"
+
+  yc-rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
