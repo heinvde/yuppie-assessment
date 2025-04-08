@@ -43,3 +43,27 @@ docker-compose down --volumes
 # Stop and keep data
 docker-compose down
 ```
+
+## Running app and infrastructure in docker
+
+You can also run the infrastructure and the app within a docker ecosystem.
+
+You will still need to [set up the app environment](./app/README.md#setting-up-the-environment) before running the container.
+
+This includes the following services
+- MySQL
+- RabbitMQ
+- Yuppie assessment App
+
+Using docker compose
+
+```bash
+# Start
+docker-compose -f docker-compose.app.yml up
+# Stop
+docker-compose -f docker-compose.app.yml down --volumes
+# Stop and keep data
+docker-compose  -f docker-compose.app.yml down
+```
+
+Then you can access the local app on [http://localhost:8080](http://localhost:8080)
